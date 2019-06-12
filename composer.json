@@ -1,0 +1,17 @@
+{
+    "name": "facecode/simplemvc",
+    "description": "basic mvc implementation",
+    "type": "project",
+    "license": "mit",
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "files": [
+            "src/helpers.php"
+        ],
+        "psr-4": {
+            "App\\": "src/app/"
+        }
+    }
+}
+
