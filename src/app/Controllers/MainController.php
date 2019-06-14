@@ -1,9 +1,9 @@
 <?php
 
-
 namespace App\Controllers;
-use App\View\View;
-use App\Services\Db;
+
+use App\Services\App;
+use App\Models\Article;
 
 class MainController
 {
@@ -12,20 +12,14 @@ class MainController
 
     public function __construct()
     {
-        $this->view = new View(__DIR__ . '/../../../templates');
-        $this->db = new Db();
+        $this->view = App::get('View');
+        $this->db = App::get('Db');
     }
 
     public function main()
     {
-        $articles = $this->db->query('SELECT * FROM `articles`');
-
-        $this->view->renderHtml('main/main.php', ['articles' => $articles]);
+        $articles = Article::findAll();
+        $this->view->renderHtml('articles/main', ['articles' => $articles]);
     }
 
-    public function sayHello($name)
-    {
-        $this->view->renderHtml('main/hello.php', ['name' => $name]);
-
-    }
 }

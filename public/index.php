@@ -1,12 +1,16 @@
 <?php
 
+use App\Services\App;
+
 require __DIR__.'/../vendor/autoload.php';
 
-$controllerAndAction = getActionWithParams(getRoute());
+App::init();
+
+$controllerAndAction = App::get('Router')->getActionWithParams();
 
 if (!$controllerAndAction) {
-    echo 'Страница не найдена!';
-    return;
+    App::get('View')->renderHtml('errors/404', [], 404);
+    exit;
 }
 
 $controllerName = $controllerAndAction['controller'];
