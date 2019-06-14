@@ -17,13 +17,13 @@ class Article extends ActiveRecordEntity
     public $text;
 
     /** @var string */
-    public $authorId;
+    public $author_id;
 
     /** @var string */
-    public $createdAt;
+    public $created_at;
 
     public function getAuthor()
     {
-        return User::getById($this->authorId);
+        return User::getById($this->author_id);
     }
 }

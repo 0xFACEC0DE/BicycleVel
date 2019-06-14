@@ -14,17 +14,17 @@ class User extends ActiveRecordEntity
     public $email;
 
     /** @var int */
-    public $isConfirmed;
+    public $is_confirmed;
 
     /** @var string */
     public $role;
 
     /** @var string */
-    public $passwordHash;
+    public $password_hash;
 
     /** @var string */
-    public $authToken;
+    public $auth_token;
 
     /** @var string */
-    public $createdAt;
+    public $created_at;
 }

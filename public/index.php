@@ -6,10 +6,10 @@ require __DIR__.'/../vendor/autoload.php';
 
 App::init();
 
-$controllerAndAction = App::get('Router')->getActionWithParams();
+$controllerAndAction = App::router()->getActionWithParams();
 
 if (!$controllerAndAction) {
-    App::get('View')->renderHtml('errors/404', [], 404);
+    App::view()->renderHtml('errors/404', [], 404);
     exit;
 }
 

@@ -12,8 +12,8 @@ class MainController
 
     public function __construct()
     {
-        $this->view = App::get('View');
-        $this->db = App::get('Db');
+        $this->view = App::view();
+        $this->db = App::db();
     }
 
     public function main()

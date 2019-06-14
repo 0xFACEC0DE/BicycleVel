@@ -9,7 +9,14 @@ return [
     ],
 
     'routes' => [
-        '/articles/(\d+)' => ['ArticleController', 'view'],
-        '/'                => ['MainController', 'main'],
+        'GET' => [
+            ''                    => ['MainController', 'main'],
+            'articles/(\d+)'      => ['ArticleController', 'view'],
+            'articles/(\d+)/edit' => ['ArticleController', 'update'],
+            'articles/(\w+)/add' => ['ArticleController', 'create'],
+        ],
+        'POST' => [
+
+        ]
     ]
 ];
