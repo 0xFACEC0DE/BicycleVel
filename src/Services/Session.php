@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace Bicycle\Services;
 
 class Session
 {

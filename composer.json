@@ -4,12 +4,14 @@
     "type": "project",
     "license": "mit",
     "minimum-stability": "dev",
-    "require": {},
+    "require": {
+        "php": "^7.2"
+    },
     "autoload": {
         "files": [
         ],
         "psr-4": {
-            "App\\": "src/app/"
+            "Bicycle\\": "src/"
         }
     }
 }

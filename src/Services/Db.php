@@ -1,21 +1,21 @@
 <?php
 
-namespace App\Services;
+namespace Bicycle\Services;
 
 class Db
 {
     private $pdo;
 
-    public function __construct()
+    public function __construct($dbConfig)
     {
-        $dbConfig = (require __DIR__ . '/../../config.php')['db'];
         $dsn = 'mysql:host=' . $dbConfig['host'] . ';port=' . $dbConfig['port'] . ';dbname=' . $dbConfig['dbname'] . ';charset=UTF8';
 
         $this->pdo = new \PDO($dsn, $dbConfig['user'], $dbConfig['password']);
+        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         $this->pdo->exec('SET NAMES UTF8');
     }
 
-    public function query(string $sql, array $params = [], string $className = 'stdClass')
+    public function query(string $sql, array $params = [], string $className = null)
     {
         $sth = $this->pdo->prepare($sql);
         $result = $sth->execute($params);
@@ -38,8 +38,13 @@ class Db
     public function transaction(callable $callback)
     {
         $this->pdo->beginTransaction();
-        $callback();
-        $this->pdo->commit();
+        try {
+            $callback();
+            $this->pdo->commit();
+        } catch (\Exception $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
     }
 
     public function getLastInsertId(): int

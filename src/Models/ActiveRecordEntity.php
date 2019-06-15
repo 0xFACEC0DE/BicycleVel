@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace Bicycle\Models;
 
-use App\Services\App;
+use Bicycle\Services\App;
 
 abstract class ActiveRecordEntity
 {
@@ -118,4 +118,15 @@ abstract class ActiveRecordEntity
         return $result;
     }
 
+    /**
+     * @return bool
+     */
+    public function delete()
+    {
+        $table = static::$table;
+        $sql = "DELETE FROM `$table` WHERE id = :id";
+        $result = App::db()->exec($sql, [':id' => $this->id]);
+        $this->id = null;
+        return $result;
+    }
 }

@@ -1,22 +1,34 @@
-<?php
-
-use App\Services\App;
+<?php use Bicycle\Services\App;
 
 require __DIR__.'/../vendor/autoload.php';
 
-App::init();
+const CONFIG = [
+    'db' => [
+        'host' => '127.0.01',
+        'port' => '3306',
+        'dbname' => 'mvc',
+        'user' => 'homestead',
+        'password' => 'secret',
+    ],
 
-$controllerAndAction = App::router()->getActionWithParams();
+    'routes' => [
+        'GET' => [
+            ''                    => ['MainController', 'main'],
+            'articles/(\d+)'      => ['ArticleController', 'view'],
+            'articles/(\d+)/edit' => ['ArticleController', 'update'],
+            'articles/(\w+)/add'  => ['ArticleController', 'create'],
+            'articles/(\d+)/delete' => ['ArticleController', 'delete'],
+        ],
+        'POST' => [
 
-if (!$controllerAndAction) {
-    App::view()->renderHtml('errors/404', [], 404);
-    exit;
+        ]
+    ],
+
+    'templates_path'  => __DIR__ . '/../templates/'
+];
+
+try {
+    App::init(CONFIG);
+} catch (Exception $e){
+    App::view()->renderHtml('errors/500', ['error' => $e->getMessage()]);
 }
-
-$controllerName = $controllerAndAction['controller'];
-$actionName = $controllerAndAction['action'];
-$params = $controllerAndAction['params'];
-
-$controller = new $controllerName();
-$controller->$actionName(...$params);
-

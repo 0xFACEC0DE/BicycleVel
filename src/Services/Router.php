@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace Bicycle\Services;
 
 /**
  * Class Router
@@ -28,12 +28,11 @@ class Router
     /**
      * Router constructor.
      */
-    public function __construct()
+    public function __construct($routes)
     {
-        $this->routes = (require __DIR__ . '/../../config.php')['routes'];
         $this->route = parse_url($_SERVER['REQUEST_URI'])['path'];
         $this->requestMethod = strtoupper($_SERVER['REQUEST_METHOD']);
-        $this->routes = isset($this->routes[$this->requestMethod]) ? $this->routes[$this->requestMethod] : [];
+        $this->routes = isset($routes[$this->requestMethod]) ? $routes[$this->requestMethod] : [];
         //$this->query = $_REQUEST ?? '';
     }
 
@@ -46,7 +45,7 @@ class Router
         $prepared = [];
         foreach ($this->routes as $route => $controllerAndAction) {
             $regex = '~^/' . $route . '/?$~';
-            $prepared[$regex]['controller'] = 'App\Controllers\\' . $controllerAndAction[0];
+            $prepared[$regex]['controller'] = 'Bicycle\Controllers\\' . $controllerAndAction[0];
             $prepared[$regex]['action'] = $controllerAndAction[1];
         }
         return $prepared;

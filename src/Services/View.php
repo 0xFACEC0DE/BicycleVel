@@ -1,10 +1,15 @@
 <?php
 
-namespace App\Services;
+namespace Bicycle\Services;
 
 class View
 {
-    private $templatePath = __DIR__ . '/../../../templates/';
+    private $templatePath;
+
+    public function __construct($templatePath)
+    {
+        $this->templatePath = $templatePath;
+    }
 
     public function renderHtml(string $templateName, array $vars = [], int $code = 200)
     {

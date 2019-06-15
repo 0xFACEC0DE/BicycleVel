@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace Bicycle\Models;
 
 class User extends ActiveRecordEntity
 {
