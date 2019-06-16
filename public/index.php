@@ -13,7 +13,7 @@ const CONFIG = [
 
     'routes' => [
         'GET' => [
-            ''                    => ['MainController', 'main'],
+            ''                    => ['MainController', 'index'],
             'articles/(\d+)'      => ['ArticleController', 'view'],
             'articles/(\d+)/edit' => ['ArticleController', 'update'],
             'articles/(\w+)/add'  => ['ArticleController', 'create'],
@@ -30,5 +30,6 @@ const CONFIG = [
 try {
     App::init(CONFIG);
 } catch (Exception $e){
-    App::view()->renderHtml('errors/500', ['error' => $e->getMessage()]);
+    App::response()->setResponseCode(500);
+    App::view()->html('errors/500', ['error' => $e->getMessage()]);
 }

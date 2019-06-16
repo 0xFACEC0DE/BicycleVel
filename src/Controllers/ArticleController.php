@@ -12,28 +12,28 @@ class ArticleController
     public function view(int $articleId)
     {
         $article = Article::getById($articleId);
-        if ($article === null) {
-            App::view()->renderHtml('errors/404', [], 404);
-            return;
-        }
 
-        App::view()->renderHtml('articles/single', compact('article'));
+        if (is_null($article)) {
+            App::response()->setResponseCode(404);
+            return App::view()->html('errors/404');
+        }
+        return App::view()->html('articles/single', compact('article'));
     }
 
     public function update($articleId)
     {
         $article = Article::getById($articleId);
 
-        if ($article === null) {
-            App::view()->renderHtml('errors/404.php', [], 404);
-            return;
+        if (is_null($article)) {
+            App::response()->setResponseCode(404);
+            return App::view()->html('errors/404');
         }
 
         $article->name = 'arn';
         $article->text = 'sdfjhojfoihs';
         $article->save();
 
-        App::view()->renderHtml('articles/single', compact('article'));
+        return App::view()->html('articles/single', compact('article'));
     }
 
     public function create($name)
@@ -47,13 +47,19 @@ class ArticleController
         $article->save();
 
         $article = Article::getById($article->id);
-        App::view()->renderHtml('articles/single', compact('article'));
+        return App::view()->html('articles/single', compact('article'));
     }
 
     public function delete($articleId)
     {
         $article = Article::getById($articleId);
+
+        if (is_null($article)) {
+            App::response()->setResponseCode(404);
+            return App::view()->html('errors/404');
+        }
+
         $res = $article->delete();
-        App::view()->renderHtml('articles/deleted', compact('res'));
+        return App::view()->html('articles/deleted', compact('res'));
     }
 }

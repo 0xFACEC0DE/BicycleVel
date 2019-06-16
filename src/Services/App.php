@@ -16,6 +16,7 @@ class App
         self::$container['session'] = new Session();
         self::$container['view'] = new View($config['templates_path']);
         self::$container['router'] = new Router($config['routes']);
+        self::$container['response'] = new Response();
         self::$container['db'] = new Db($config['db']);
 
         self::$controllerAndAction = self::router()->getActionWithParams();
@@ -26,7 +27,10 @@ class App
     private static function run()
     {
         if (!self::$controllerAndAction) {
-            self::view()->renderHtml('errors/404', [], 404);
+            self::response()->setResponseCode(404);
+            $out = self::view()->html('errors/404');
+            self::response()->setOutput($out);
+            self::response()->output();
             exit;
         }
 
@@ -35,7 +39,12 @@ class App
         $params = self::$controllerAndAction['params'];
 
         $controller = new $controllerName();
-        $controller->$actionName(...$params);
+        $controllerOutput = $controller->$actionName(...$params);
+
+        self::response()->setOutput($controllerOutput);
+        self::response()->sendHeaders();
+        self::response()->output();
+        exit;
     }
 
     public static function db()
@@ -72,5 +81,14 @@ class App
          */
         $router = self::$container['router'];
         return $router;
+    }
+
+    public static function response()
+    {
+        /**
+         * @var \Bicycle\Services\Response $response
+         */
+        $response = self::$container['response'];
+        return $response;
     }
 }

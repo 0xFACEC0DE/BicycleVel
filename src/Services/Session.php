@@ -26,4 +26,9 @@ class Session
     {
         session_unset();
     }
+
+    public function commit()
+    {
+        session_commit();
+    }
 }

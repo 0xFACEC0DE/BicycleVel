@@ -8,10 +8,10 @@ use Bicycle\Models\Article;
 class MainController
 {
 
-    public function main()
+    public function index()
     {
         $articles = Article::findAll();
-        App::view()->renderHtml('articles/main', compact('articles'));
+        return App::view()->html('articles/main', compact('articles'));
     }
 
 }
