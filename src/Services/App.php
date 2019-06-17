@@ -15,12 +15,13 @@ class App
      */
     public static function run($config)
     {
+        //set storage bindings
         self::$container['session'] = new Session();
         self::$container['view'] = new View($config['templates_path']);
         self::$container['router'] = new Router($config['routes']);
         self::$container['response'] = new Response();
         self::$container['db'] = new Db($config['db']);
-
+        //all magic here
         if (!$data = self::router()->getActionWithParams()) self::abortWithErrorPage();
         $controllerOutput = (new $data['controller'])->{$data['action']}(...($data['params']));
         self::response()->setOutput($controllerOutput)->sendHeaders()->output();

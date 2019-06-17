@@ -22,7 +22,7 @@ abstract class ActiveRecordEntity
     /**
      * @return array of Bicycle\Services\App\ActiveRecordEntity
      */
-    public static function findAll(): array
+    public static function findAll(): ?array
     {
         return App::db()->query('SELECT * FROM `' . static::$table . '`', [], static::class);
     }

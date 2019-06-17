@@ -18,9 +18,10 @@ const CONFIG = [
             'articles/(\d+)/edit' => ['ArticleController', 'update'],
             'articles/(\w+)/add'  => ['ArticleController', 'create'],
             'articles/(\d+)/delete' => ['ArticleController', 'delete'],
+            'users/register' => ['UserController', 'signUp'],
         ],
         'POST' => [
-
+            'register' => ['UserController', 'register'],
         ]
     ],
 

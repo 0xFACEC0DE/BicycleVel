@@ -25,8 +25,8 @@ class Db
         if (false === $result) {
             return null;
         }
-
-        return $sth->fetchAll(\PDO::FETCH_CLASS, $className);
+        $array = $sth->fetchAll(\PDO::FETCH_CLASS, $className);
+        return empty($array) ? null : $array;
     }
 
     public function exec(string $sql, array $params = [])
