@@ -37,13 +37,16 @@ class User extends ActiveRecordEntity
      */
     public static function create(array $data)
     {
-        self::validateInput($data);
+        $errorMessages = self::validateInput($data);
+        if (!empty($errorMessages)) {
+            throw new InvalidArgumentException(implode('<br/>', $errorMessages));
+        };
 
         $user = new User();
         $user->nickname = $data['nickname'];
         $user->email = $data['email'];
         $user->password_hash = password_hash($data['password'], PASSWORD_DEFAULT);
-        $user->auth_token = sha1(random_bytes(100)) . sha1(random_bytes(100));
+        $user->auth_token = sha1(random_bytes(64)) . sha1(random_bytes(64));
         $result = $user->save();
         if ($result) {
             return $user;
@@ -51,40 +54,30 @@ class User extends ActiveRecordEntity
         return null;
     }
 
-    public static function validateInput(array $data)
+    public static function validateInput(array $data) : array
     {
-        $rules[] = [(empty($data['nickname'])) , 'Не передан nickname'];
+        $rules = [
+            [(empty($_POST['nickname']) && empty($_POST['email']) && empty($_POST['password'])), 'Заполните форму'],
+            [(empty($data['nickname'])), 'Не передан nickname'],
+            [(!preg_match('/[a-zA-Z0-9]+/',$data['nickname'])),
+                'Nickname может состоять только из символов латинского алфавита и цифр'],
+            [(self::find($data['nickname'], 'nickname')), 'Пользователь с таким nickname уже существует'],
+            [(empty($data['email'])), 'Не передан email'],
+            [(!filter_var($data['email'], FILTER_VALIDATE_EMAIL)), 'Email некорректен'],
+            [(self::find($data['email'], 'email')), 'Пользователь с таким email уже существует'],
+            [(empty($data['password'])), 'Не передан password'],
+            [(mb_strlen($data['password']) < 6), 'Пароль должен быть не менее 6 символов']
+        ];
 
-        if (empty($data['nickname'])) {
-            throw new InvalidArgumentException('Не передан nickname');
-        }
+        if ($rules[0][0]) return [$rules[0][1]]; //если ничего не передано вернуть только первое сообщение
 
-        if (!preg_match('/[a-zA-Z0-9]+/', $data['nickname'])) {
-            throw new InvalidArgumentException('Nickname может состоять только из символов латинского алфавита и цифр');
-        }
-
-        if (self::find($data['nickname'], 'nickname')) {
-            throw new InvalidArgumentException('Пользователь с таким nickname уже существует');
-        }
-        
-        if (empty($data['email'])) {
-            throw new InvalidArgumentException('Не передан email');
-        }
-
-        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException('Email некорректен');
-        }
-
-        if (self::find($data['email'], 'email')) {
-            throw new InvalidArgumentException('Пользователь с таким email уже существует');
+        $errorMessages = [];
+        foreach ($rules as $expression) {
+            if ($expression[0]) {
+                $errorMessages[] = $expression[1];
+            }
         }
 
-        if (empty($data['password'])) {
-            throw new InvalidArgumentException('Не передан password');
-        }
-
-        if (mb_strlen($data['password']) < 6) {
-            throw new InvalidArgumentException('Пароль должен быть не менее 6 символов');
-        }
+        return $errorMessages;
     }
 }

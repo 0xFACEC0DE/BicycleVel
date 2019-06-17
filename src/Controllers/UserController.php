@@ -10,14 +10,12 @@ class UserController
 {
     public function register()
     {
-        if (!empty($_POST)) {
-            try {
-                $user = User::create($_POST);
-            } catch (InvalidArgumentException $e) {
-                $error = $e->getMessage();
-                return App::view()->html('users/signUp', ['error' => $error]);
-            }
+        try {
+            $user = User::create($_POST);
+        } catch (InvalidArgumentException $e) {
+            return App::view()->html('users/signUp', ['error' => $e->getMessage()]);
         }
+
         return App::view()->html('users/signUpSuccessful', ['name' => $user->nickname]);
     }
 
