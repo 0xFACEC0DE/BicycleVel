@@ -4,6 +4,10 @@ namespace Bicycle\Models;
 
 use Bicycle\Services\App;
 
+/**
+ * Class ActiveRecordEntity
+ * @package Bicycle\Models
+ */
 abstract class ActiveRecordEntity
 {
     /**
@@ -16,28 +20,43 @@ abstract class ActiveRecordEntity
 
 
     /**
-     * @return mixed
+     * @return array of Bicycle\Services\App\ActiveRecordEntity
      */
-    public static function findAll()
+    public static function findAll(): array
     {
         return App::db()->query('SELECT * FROM `' . static::$table . '`', [], static::class);
     }
 
     /**
-     * @param int $id
-     * @return static|null
+     * @param $value
+     * @param string $property
+     * @return ActiveRecordEntity|null
      */
-    public static function getById(int $id): ?self
+    public static function find($value, string $property = 'id'): ?self
     {
+        $property = '`'. trim($property) .'`';
         $entities = App::db()->query(
-            'SELECT * FROM `' . static::$table . '` WHERE id = :id;',
-            [':id' => $id],
+            "SELECT * FROM `" . static::$table . "` WHERE $property = :val;",
+            [ ':val' => $value],
             static::class
         );
         return $entities ? $entities[0] : null;
     }
 
+    /**
+     * @param $value scalar
+     * @param string $property Db field name
+     * @return ActiveRecordEntity|null
+     */
+    public static function findOrDie($value, string $property = 'id'): ?self
+    {
+        $item = static::find($value, $property);
 
+        if (is_null($item)) {
+            App::abortWithErrorPage('', 404);
+        }
+        return $item;
+    }
     /**
      * Get array of colunm names and not null values from current model
      * @return array|\ReflectionProperty[]
@@ -69,7 +88,7 @@ abstract class ActiveRecordEntity
     }
 
     /**
-     * @param array $properties
+     * @param array $properties Db fields
      * @return bool
      */
     private function update($properties)

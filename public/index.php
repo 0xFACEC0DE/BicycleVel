@@ -28,8 +28,7 @@ const CONFIG = [
 ];
 
 try {
-    App::init(CONFIG);
+    App::run(CONFIG);
 } catch (Exception $e){
-    App::response()->setResponseCode(500);
-    App::view()->html('errors/500', ['error' => $e->getMessage()]);
+    App::abortWithErrorPage($e->getMessage(), 500);
 }

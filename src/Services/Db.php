@@ -8,11 +8,13 @@ class Db
 
     public function __construct($dbConfig)
     {
-        $dsn = 'mysql:host=' . $dbConfig['host'] . ';port=' . $dbConfig['port'] . ';dbname=' . $dbConfig['dbname'] . ';charset=UTF8';
-
+        $dsn = 'mysql:host=' . $dbConfig['host'] . ';port=' . $dbConfig['port'] . ';dbname=' . $dbConfig['dbname'];
         $this->pdo = new \PDO($dsn, $dbConfig['user'], $dbConfig['password']);
+
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $this->pdo->exec('SET NAMES UTF8');
+        $this->pdo->exec("SET NAMES 'utf8'");
+        $this->pdo->exec("SET CHARACTER SET utf8");
+        $this->pdo->exec("SET CHARACTER_SET_CONNECTION=utf8");
     }
 
     public function query(string $sql, array $params = [], string $className = null)

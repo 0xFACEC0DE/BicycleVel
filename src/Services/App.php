@@ -4,49 +4,44 @@ namespace Bicycle\Services;
 
 class App
 {
-    private static $container;
-    private static $loaded;
-    private static $controllerAndAction;
+    /**
+     * @var array Service objects storage
+     */
+    private static $container = [];
 
-    public static function init($config)
+    /**
+     * Application execution core
+     * @param $config
+     */
+    public static function run($config)
     {
-        if (self::$loaded) return;
-        self::$container = [];
-
         self::$container['session'] = new Session();
         self::$container['view'] = new View($config['templates_path']);
         self::$container['router'] = new Router($config['routes']);
         self::$container['response'] = new Response();
         self::$container['db'] = new Db($config['db']);
 
-        self::$controllerAndAction = self::router()->getActionWithParams();
-        self::$loaded = true;
-        self::run();
+        if (!$data = self::router()->getActionWithParams()) self::abortWithErrorPage();
+        $controllerOutput = (new $data['controller'])->{$data['action']}(...($data['params']));
+        self::response()->setOutput($controllerOutput)->sendHeaders()->output();
     }
 
-    private static function run()
+    /**
+     * @param string $message
+     * @param int $code
+     */
+    public static function abortWithErrorPage($message = '', $code = 404)
     {
-        if (!self::$controllerAndAction) {
-            self::response()->setResponseCode(404);
-            $out = self::view()->html('errors/404');
-            self::response()->setOutput($out);
-            self::response()->output();
-            exit;
-        }
-
-        $controllerName = self::$controllerAndAction['controller'];
-        $actionName = self::$controllerAndAction['action'];
-        $params = self::$controllerAndAction['params'];
-
-        $controller = new $controllerName();
-        $controllerOutput = $controller->$actionName(...$params);
-
-        self::response()->setOutput($controllerOutput);
-        self::response()->sendHeaders();
+        self::response()->setResponseCode($code);
+        $out = self::view()->html('errors/' . $code, compact('message'));
+        self::response()->setOutput($out);
         self::response()->output();
         exit;
     }
 
+    /**
+     * @return Db
+     */
     public static function db()
     {
         /**
@@ -56,6 +51,9 @@ class App
         return $db;
     }
 
+    /**
+     * @return Session
+     */
     public static function session()
     {
         /**
@@ -65,6 +63,9 @@ class App
         return $session;
     }
 
+    /**
+     * @return View
+     */
     public static function view()
     {
         /**
@@ -74,6 +75,9 @@ class App
         return $view;
     }
 
+    /**
+     * @return Router
+     */
     public static function router()
     {
         /**
@@ -83,6 +87,9 @@ class App
         return $router;
     }
 
+    /**
+     * @return Response
+     */
     public static function response()
     {
         /**

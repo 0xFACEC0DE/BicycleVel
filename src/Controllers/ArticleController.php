@@ -11,23 +11,14 @@ class ArticleController
 
     public function view(int $articleId)
     {
-        $article = Article::getById($articleId);
+        $article = Article::findOrDie($articleId);
 
-        if (is_null($article)) {
-            App::response()->setResponseCode(404);
-            return App::view()->html('errors/404');
-        }
         return App::view()->html('articles/single', compact('article'));
     }
 
     public function update($articleId)
     {
-        $article = Article::getById($articleId);
-
-        if (is_null($article)) {
-            App::response()->setResponseCode(404);
-            return App::view()->html('errors/404');
-        }
+        $article = Article::findOrDie($articleId);
 
         $article->name = 'arn';
         $article->text = 'sdfjhojfoihs';
@@ -38,7 +29,7 @@ class ArticleController
 
     public function create($name)
     {
-        $author = User::getById(1);
+        $author = User::find(1);
 
         $article = new Article();
         $article->author_id = $author->id;
@@ -46,20 +37,13 @@ class ArticleController
         $article->text = 'some text ' . $name;
         $article->save();
 
-        $article = Article::getById($article->id);
+        $article = Article::findOrDie($article->id);
         return App::view()->html('articles/single', compact('article'));
     }
 
     public function delete($articleId)
     {
-        $article = Article::getById($articleId);
-
-        if (is_null($article)) {
-            App::response()->setResponseCode(404);
-            return App::view()->html('errors/404');
-        }
-
-        $res = $article->delete();
+        $res = Article::findOrDie($articleId)->delete();
         return App::view()->html('articles/deleted', compact('res'));
     }
 }

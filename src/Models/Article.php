@@ -24,6 +24,6 @@ class Article extends ActiveRecordEntity
 
     public function getAuthor()
     {
-        return User::getById($this->author_id);
+        return User::findOrDie($this->author_id);
     }
 }
