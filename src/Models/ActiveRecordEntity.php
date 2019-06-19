@@ -2,7 +2,7 @@
 
 namespace Bicycle\Models;
 
-use Bicycle\Services\App;
+use Bicycle\Lib\App;
 
 /**
  * Class ActiveRecordEntity
@@ -44,16 +44,16 @@ abstract class ActiveRecordEntity
     }
 
     /**
-     * @param $value scalar
+     * @param $value mixed
      * @param string $property Db field name
-     * @return ActiveRecordEntity|null
+     * @return ActiveRecordEntity
      */
-    public static function findOrDie($value, string $property = 'id'): ?self
+    public static function findOrDie($value, string $property = 'id', string $message = ''): self
     {
         $item = static::find($value, $property);
 
         if (is_null($item)) {
-            App::abortWithErrorPage('', 404);
+            App::abortWithErrorPage($message, 404);
         }
         return $item;
     }

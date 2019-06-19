@@ -1,6 +1,6 @@
 <?php
 
-namespace Bicycle\Services;
+namespace Bicycle\Lib;
 
 /**
  * Class Router

@@ -1,14 +1,14 @@
 <?php
 
-namespace Bicycle\Services;
+namespace Bicycle\Lib;
 
 class View
 {
-    private $templatePath;
+    private $templatePath ;
 
-    public function __construct($templatePath)
+    public function __construct()
     {
-        $this->templatePath = $templatePath;
+        $this->templatePath =  __DIR__ . '/../../templates/';
     }
 
     public function html(string $templateName, array $vars = [])
@@ -35,5 +35,16 @@ class View
         $res = ['data' => $value ];
         if ($error) $res['error'] = $error;
         return json_encode($res);
+    }
+
+    public function partialHtml(string $templateName, array $vars = [])
+    {
+        if (!is_file($this->templatePath . $templateName . '.php')) {
+            $templateName = 'errors/404';
+        }
+        extract($vars);
+        ob_start();
+        include($this->templatePath . $templateName . '.php');
+        return ob_get_clean();
     }
 }

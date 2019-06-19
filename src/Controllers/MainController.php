@@ -2,7 +2,7 @@
 
 namespace Bicycle\Controllers;
 
-use Bicycle\Services\App;
+use Bicycle\Lib\App;
 use Bicycle\Models\Article;
 
 class MainController

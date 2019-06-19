@@ -2,6 +2,8 @@
 
 namespace Bicycle\Models;
 
+use Bicycle\Models\Users\User;
+
 /**
  * Class Article
  * @package App\Models

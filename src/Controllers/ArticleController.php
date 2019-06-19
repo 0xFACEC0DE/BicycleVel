@@ -2,9 +2,9 @@
 
 namespace Bicycle\Controllers;
 
-use Bicycle\Services\App;
+use Bicycle\Lib\App;
 use Bicycle\Models\Article;
-use Bicycle\Models\User;
+use Bicycle\Models\Users\User;
 
 class ArticleController
 {

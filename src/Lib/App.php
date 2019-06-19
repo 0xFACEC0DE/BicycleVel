@@ -1,6 +1,6 @@
 <?php
 
-namespace Bicycle\Services;
+namespace Bicycle\Lib;
 
 class App
 {
@@ -9,18 +9,21 @@ class App
      */
     private static $container = [];
 
+    private static $config;
+
     /**
      * Application execution core
      * @param $config
      */
-    public static function run($config)
+    public static function run()
     {
+        self::$config = require(__DIR__ . '/../../config.php');
         //set storage bindings
         self::$container['session'] = new Session();
-        self::$container['view'] = new View($config['templates_path']);
-        self::$container['router'] = new Router($config['routes']);
+        self::$container['view'] = new View();
+        self::$container['router'] = new Router(self::$config['routes']);
         self::$container['response'] = new Response();
-        self::$container['db'] = new Db($config['db']);
+        self::$container['db'] = new Db(self::$config['db']);
         //all magic here
         if (!$data = self::router()->getActionWithParams()) self::abortWithErrorPage();
         $controllerOutput = (new $data['controller'])->{$data['action']}(...($data['params']));
@@ -46,7 +49,7 @@ class App
     public static function db()
     {
         /**
-         * @var \Bicycle\Services\Db $db
+         * @var \Bicycle\Lib\Db $db
          */
         $db = self::$container['db'];
         return $db;
@@ -58,7 +61,7 @@ class App
     public static function session()
     {
         /**
-         * @var \Bicycle\Services\Session $session
+         * @var \Bicycle\Lib\Session $session
          */
         $session = self::$container['session'];
         return $session;
@@ -70,7 +73,7 @@ class App
     public static function view()
     {
         /**
-         * @var \Bicycle\Services\View $view
+         * @var \Bicycle\Lib\View $view
          */
         $view = self::$container['view'];
         return $view;
@@ -82,7 +85,7 @@ class App
     public static function router()
     {
         /**
-         * @var \Bicycle\Services\Router $router
+         * @var \Bicycle\Lib\Router $router
          */
         $router = self::$container['router'];
         return $router;
@@ -94,9 +97,14 @@ class App
     public static function response()
     {
         /**
-         * @var \Bicycle\Services\Response $response
+         * @var \Bicycle\Lib\Response $response
          */
         $response = self::$container['response'];
         return $response;
+    }
+
+    public static function config()
+    {
+        return self::$config;
     }
 }

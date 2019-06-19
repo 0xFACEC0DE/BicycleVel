@@ -1,7 +1,8 @@
 <?php
 
-namespace Bicycle\Models;
+namespace Bicycle\Models\Users;
 
+use Bicycle\Models\ActiveRecordEntity;
 use Bicycle\Exceptions\InvalidArgumentException;
 
 class User extends ActiveRecordEntity
@@ -79,5 +80,11 @@ class User extends ActiveRecordEntity
         }
 
         return $errorMessages;
+    }
+
+    public function activate()
+    {
+        $this->is_confirmed = 1;
+        return $this->save();
     }
 }

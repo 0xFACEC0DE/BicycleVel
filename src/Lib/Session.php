@@ -1,6 +1,6 @@
 <?php
 
-namespace Bicycle\Services;
+namespace Bicycle\Lib;
 
 class Session
 {
@@ -19,7 +19,7 @@ class Session
     
     public function get($key)
     {
-        return $_SESSION[$key];
+        return !empty($_SESSION[$key]) ? $_SESSION[$key] : null;
     }
 
     public function clean()
