@@ -3,73 +3,56 @@
 namespace Bicycle\Controllers;
 
 use Bicycle\Lib\App;
-use Bicycle\Models\Users\User;
-use Bicycle\Models\Users\UserActivationService;
-use Bicycle\Exceptions\InvalidArgumentException;
+use Bicycle\Models\User;
+use Bicycle\Services\UserActivation\UserActivationService;
 
-class UserController
+class UserController extends Controller
 {
-    public function register()
+    public function profile()
     {
-        if (!empty($_POST)) {
-            try {
-                $user = User::create($_POST);
-            } catch (InvalidArgumentException $e) {
-                return App::view()->html('users/signUp', ['error' => $e->getMessage()]);
-            }
-            if ($user instanceof User) {
-
-                App::session()->set('id', $user->id);
-                UserActivationService::sendActivationMail($user,
-                    'Активация',
-                    'mail/userActivation',
-                     [
-                    'userId' => $user->id,
-                    'code' => UserActivationService::createActivationCode($user),
-                    'url' => App::config()['mailing']['my_url']
-                ]);
-
-                return App::view()->html('users/signUpSuccess');
-            }
-        } else {
-            return $this->signUp();
+        if ($user = User::authorized()) {
+            return App::view()->layoutHtml('users/authorized', compact('user'));
         }
+
+        return App::view()->layoutHtml('users/notAuthorized');
     }
 
     public function signUp()
     {
-        return App::view()->html('users/signUp');
+        $errors = App::session()->get('errors');
+        $previous = App::session()->get('previous');
+        return App::view()->layoutHtml('users/signUp', compact(['errors', 'previous']));
+    }
+
+    public function signUpSuccess()
+    {
+        return App::view()->layoutHtml('users/signUpSuccess');
+    }
+
+    public function signIn()
+    {
+        $previous = App::session()->get('previous');
+        $errors = App::session()->get('errors');
+        return App::view()->layoutHtml('users/signIn', compact(['errors', 'previous']));
     }
 
     public function activate(int $userId, string $activationCode)
     {
         $user = User::findOrDie($userId);
-        App::session()->set('id', $user->id);
 
-        if (UserActivationService::checkActivationCode($user, $activationCode)) {
-            if ($user->activate()) {
-                App::session()->set('auth_token', $user->auth_token);
-                return App::view()->html('users/activateSuccess');
-            }
-
+        if (UserActivationService::checkActivationCode($user, $activationCode) && $user->activate()) {
+            return App::view()->layoutHtml('users/activateSuccess');
+        } else {
+            App::session()->set('id', $user->id);
+            return App::view()->layoutHtml('users/activateFail');
         }
-        return App::view()->html('users/activateFail');
     }
 
     public function resend()
     {
-        $userId = App::session()->get('id');
-        if (!$userId) App::abortWithErrorPage('пользователь не найден');
-        $user = User::findOrDie($userId, 'id', 'пользователь не найден');
+        $user = User::findOrDie(App::session()->get('id'));
+        UserActivationService::sendActivationMail($user, 'Активация', 'mail/userActivation');
 
-        UserActivationService::sendActivationMail($user,
-            'Активация',
-            'mail/userActivation',
-            [
-                'userId' => $user->id,
-                'code' => UserActivationService::createActivationCode($user),
-                'url' => App::config()['mailing']['my_url']
-            ]);
-        return App::view()->html('users/signUpSuccess', ['resended' => 'повторно']);
+        return App::view()->layoutHtml('users/signUpSuccess', ['resended' => 'повторно']);
     }
 }

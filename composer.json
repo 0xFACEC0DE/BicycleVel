@@ -1,6 +1,6 @@
 {
-    "name": "facecode/simplemvc",
-    "description": "basic mvc implementation",
+    "name": "facecode/bicycle",
+    "description": "demo mvc app",
     "type": "project",
     "license": "mit",
     "minimum-stability": "dev",

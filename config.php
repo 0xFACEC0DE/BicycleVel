@@ -1,10 +1,10 @@
 <?php return [
 
     'db' => [
-        'host' => '127.0.01',
-        'port' => '3306',
+        'host'   => '127.0.01',
+        'port'   => '3306',
         'dbname' => 'mvc',
-        'user' => 'homestead',
+        'user'   => 'homestead',
         'password' => 'secret',
     ],
 
@@ -15,22 +15,27 @@
         'password' => 'asdQWE123',
         'encryption' => 'tls',
         'sender' => ['john@doe.com' => 'John Doe'],
-        'my_url' => 'http://mvc.loc'
     ],
 
     'routes' => [
         'GET' => [
-            ''                    => ['MainController', 'index'],
+            ''              => ['ArticleController', 'index'],
             'articles/(\d+)'      => ['ArticleController', 'view'],
-            'articles/(\d+)/edit' => ['ArticleController', 'update'],
-            'articles/(\w+)/add'  => ['ArticleController', 'create'],
             'articles/(\d+)/delete' => ['ArticleController', 'delete'],
-            'users/register'         => ['UserController', 'signUp'],
-            'users/(\d+)/activate/(.+)' => ['UserController', 'activate'],
-            'users/resend'            => ['UserController', 'resend'],
+            'user'          => ['UserController', 'profile'],  //info for signed in user or links to forms
+            'user/signup'   => ['UserController', 'signUp'], //show registration form
+            'user/signin'   => ['UserController', 'signIn'], //show form for sign in existing users
+            'user/logout'   => ['AuthController', 'logout'], //logout action for signed in user
+            'user/(\d+)/activate/(.+)' => ['UserController', 'activate'],
+            'user/resend'            => ['UserController', 'resend'],
+            'user/signup/success'    => ['UserController', 'signUpSuccess'],
+
         ],
         'POST' => [
-            'register' => ['UserController', 'register'],
+            'user/login'    => ['AuthController', 'login'],    //sign in action logic
+            'user/register' => ['AuthController', 'register'], //register action logic
+            'articles/(\w+)/add'  => ['ArticleController', 'create'],
+            'articles/(\d+)/edit' => ['ArticleController', 'update'],
         ]
     ]
 ];?>

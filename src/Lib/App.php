@@ -24,9 +24,16 @@ class App
         self::$container['router'] = new Router(self::$config['routes']);
         self::$container['response'] = new Response();
         self::$container['db'] = new Db(self::$config['db']);
-        //all magic here
-        if (!$data = self::router()->getActionWithParams()) self::abortWithErrorPage();
-        $controllerOutput = (new $data['controller'])->{$data['action']}(...($data['params']));
+
+        // getting action info from routes compared with current path
+        if (!$data = self::router()->getAction()) {
+            self::abortWithErrorPage();
+        }
+
+        $controller = new $data['controller'];
+        $action = $data['action'];
+        $controllerOutput = $controller->$action();
+
         self::response()->setOutput($controllerOutput)->sendHeaders()->output();
     }
 
@@ -36,10 +43,8 @@ class App
      */
     public static function abortWithErrorPage($message = '', $code = 404)
     {
-        self::response()->setResponseCode($code);
-        $out = self::view()->html('errors/' . $code, compact('message'));
-        self::response()->setOutput($out);
-        self::response()->output();
+        $out = self::view()->layoutHtml('errors/' . $code, compact('message'));
+        self::response()->setResponseCode($code)->setOutput($out)->output();
         exit;
     }
 

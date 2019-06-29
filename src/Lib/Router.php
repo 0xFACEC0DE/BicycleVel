@@ -30,20 +30,23 @@ class Router
      */
     public function __construct($routes)
     {
+        //route path
         $this->route = parse_url($_SERVER['REQUEST_URI'])['path'];
+        //request http method
         $this->requestMethod = strtoupper($_SERVER['REQUEST_METHOD']);
+        //app routes list matching the request http method
         $this->routes = isset($routes[$this->requestMethod]) ? $routes[$this->requestMethod] : [];
-        //$this->query = $_REQUEST ?? '';
     }
 
     /**
      * Prepare strings from config for pattern substitution
      * @return array
      */
-    private function wrapRegex() : array
+    private function wrapRegex()
     {
         $prepared = [];
         foreach ($this->routes as $route => $controllerAndAction) {
+
             $regex = '~^/' . $route . '/?$~';
             $prepared[$regex]['controller'] = 'Bicycle\Controllers\\' . $controllerAndAction[0];
             $prepared[$regex]['action'] = $controllerAndAction[1];
@@ -52,26 +55,21 @@ class Router
     }
 
     /**
-     * ['controller' => controller name, 'action' => controller method, 'params' => variable path part]
+     * ['controller' => controller name, 'action' => controller method]
      * @return array|null
      */
-    public function getActionWithParams() : ?array
+    public function getAction()
     {
         $routes = $this->wrapRegex();
-        $isRouteFound = false;
 
         foreach ($routes as $pattern => $controllerAndAction) {
             preg_match($pattern, $this->route, $matches);
             if (!empty($matches)) {
-                $isRouteFound = true;
-                break;
+                //route matched path
+                //$controllerAndAction contains array with appropriate action data at this iteration
+                return $controllerAndAction;
             }
         }
-        if(!$isRouteFound) return null;
-
-        array_shift($matches);
-        $controllerAndAction['params'] = $matches;
-
-        return $controllerAndAction;
+        return null; //no route found for current path
     }
 }

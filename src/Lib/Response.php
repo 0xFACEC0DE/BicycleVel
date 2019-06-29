@@ -47,8 +47,8 @@ class Response
 
     public function redirect(string $url = '/')
     {
-        $this::setResponseCode(303);
-        $this::setHeader('Location: ' . str_replace(['&amp;', "\n", "\r"], ['&', '', ''], $url));
+        header('Location: ' . str_replace(['&amp;', "\n", "\r"], ['&', '', ''], $url),
+            true, 303);
         exit;
     }
 }

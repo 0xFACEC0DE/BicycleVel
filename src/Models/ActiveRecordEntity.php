@@ -18,103 +18,53 @@ abstract class ActiveRecordEntity
     /** @var int */
     public $id;
 
-
-    /**
-     * @return array of Bicycle\Services\App\ActiveRecordEntity
-     */
-    public static function findAll(): ?array
+    public static function findAll(): array
     {
-        return App::db()->query('SELECT * FROM `' . static::$table . '`', [], static::class);
+        return App::db()->query('SELECT * FROM `' . static::$table . '`;', [], static::class);
     }
 
-    /**
-     * @param $value
-     * @param string $property
-     * @return ActiveRecordEntity|null
-     */
-    public static function find($value, string $property = 'id'): ?self
+    public static function find($value, string $property = 'id')
     {
-        $property = '`'. trim($property) .'`';
+        $property = '`'. $property .'`';
         $entities = App::db()->query(
             "SELECT * FROM `" . static::$table . "` WHERE $property = :val;",
             [ ':val' => $value],
             static::class
         );
-        return $entities ? $entities[0] : null;
+        return $entities;
     }
 
-    /**
-     * @param $value mixed
-     * @param string $property Db field name
-     * @return ActiveRecordEntity
-     */
+    public static function findOne($value, string $property = 'id')
+    {
+        $entities = self::find($value, $property);
+        return !empty($entities) ? $entities[0] : null;
+    }
+
     public static function findOrDie($value, string $property = 'id', string $message = ''): self
     {
-        $item = static::find($value, $property);
-
-        if (is_null($item)) {
+        if (!$item = static::findOne($value, $property)) {
             App::abortWithErrorPage($message, 404);
         }
         return $item;
     }
-    /**
-     * Get array of colunm names and not null values from current model
-     * @return array|\ReflectionProperty[]
-     */
+
     protected function getProperties()
     {
         $reflector = new \ReflectionObject($this);
-        $propertyObjects = $reflector->getProperties();
-        $properties = [];
-
-        foreach ($propertyObjects as $property) {
-            $name = $property->getName();
-            @$value = $this->$name;
-            //skip null values
-            if (is_null($value)) continue;
-
-            $properties[$name] = $value;
+        foreach ($reflector->getProperties() as $property) {
+            if (!$property->isStatic()) {
+                $properties[$property->getName()] = $property->getValue($this);
+            }
         }
         return $properties;
     }
 
-    /**
-     * @return bool Db query result
-     */
     public function save()
     {
         $properties = $this->getProperties();
         return isset($properties['id']) ? $this->update($properties) : $this->insert($properties);
     }
 
-    /**
-     * @param array $properties Db fields
-     * @return bool
-     */
-    private function update($properties)
-    {
-        unset($properties['id']); // not update autoincremented value
-        $columnsAndParams = [];
-        $paramBindings = [];
-
-        foreach ($properties as $column => $value) {
-            $param = ':' . $column;
-            $columnsAndParams[] = "`$column` = $param";
-            $paramBindings[$param] = $value;
-        }
-        $tableName = static::$table;
-        $colAndParamString = implode(', ', $columnsAndParams);
-        $id = $this->id;
-
-        $sql = "UPDATE `$tableName` SET $colAndParamString WHERE `id` = $id ;";
-
-        return App::db()->exec($sql, $paramBindings);
-    }
-
-    /**
-     * @param array $properties
-     * @return bool
-     */
     private function insert($properties)
     {
         $columns = [];
@@ -132,19 +82,38 @@ abstract class ActiveRecordEntity
 
         $sql = "INSERT INTO `$tableName` ( $columnsString ) VALUES ( $paramsString );";
 
-        $result = App::db()->exec($sql, $paramBindings);
-        $this->id = App::db()->getLastInsertId();
+        if ($result = App::db()->exec($sql, $paramBindings)) {
+            $this->id = App::db()->getLastInsertId();
+        }
+
         return $result;
     }
 
-    /**
-     * @return bool
-     */
+    private function update($properties)
+    {
+        $columnsAndParams = [];
+        $paramBindings = [];
+        $tableName = static::$table;
+        $id = $this->id;
+
+        foreach ($properties as $column => $value) {
+            $param = ':' . $column;
+            $columnsAndParams[] = "`$column` = $param";
+            $paramBindings[$param] = $value;
+        }
+
+        $colAndParamString = implode(', ', $columnsAndParams);
+        $sql = "UPDATE `$tableName` SET $colAndParamString WHERE `id` = $id ;";
+
+        return App::db()->exec($sql, $paramBindings);
+    }
+
     public function delete()
     {
         $table = static::$table;
         $sql = "DELETE FROM `$table` WHERE id = :id";
         $result = App::db()->exec($sql, [':id' => $this->id]);
+
         $this->id = null;
         return $result;
     }

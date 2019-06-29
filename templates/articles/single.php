@@ -1,4 +1,4 @@
-<td>
+<div class="center">
     <h1><?= $article->name ?></h1>
     <p><?= $article->text ?></p>
     <p><?= $article->getAuthor()->nickname ?></p>
@@ -6,5 +6,5 @@
     <b>
         <a href="/articles/<?= $article->id ?>/delete">Delete this</a>
     </b>
-</td>
+</div>
 

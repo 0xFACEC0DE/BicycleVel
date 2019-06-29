@@ -1,20 +1,18 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <?php include __DIR__ . '/partials/head.php'; ?>
 <body>
-<table class="layout">
-    <tr>
-        <td colspan="2" class="header">
-            Мой блог
-        </td>
-    </tr>
-    <tr>
-        <?php echo $content; ?>
-        <?php include __DIR__ . '/partials/sidebar.php'; ?>
-    </tr>
-    <tr>
-        <td class="footer" colspan="2">Все права защищены (c) Мой блог</td>
-    </tr>
-</table>
+<?php include __DIR__ . '/partials/navbar.php'; ?>
+    <div class="container">
+        <?php echo $content ?? ''; ?>
+
+        <?php if (!empty($errors)): ?>
+            <div class="error center">
+                <?php foreach ($errors as $message): ?>
+                    <p><?= $message ?></p>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
 </body>
 </html>

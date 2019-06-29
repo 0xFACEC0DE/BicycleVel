@@ -1,3 +1,4 @@
-<td style="text-align: center;">
+<div class="center">
     <h1>Аккаунт активирован!</h1>
-</td>
+    <a href="/user/signin">Вход</a>
+</div>

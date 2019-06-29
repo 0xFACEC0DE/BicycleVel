@@ -1,4 +1,5 @@
-<td>
-    <h1>Страница не найдена</h1>
+<div class="center">
+    <h1>Not found</h1>
+    <a href="/"><b>BACK</b></a>
     <?= $message ?? '' ?>
-</td>
+</div>

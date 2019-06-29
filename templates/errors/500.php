@@ -1,4 +1,4 @@
-<td>
-    <h1>Wooops!</h1>
+<div class="center">
+    <h1>Wooops! Server error</h1>
     <?= $message ?>
-</td>
+</div>

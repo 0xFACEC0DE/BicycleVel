@@ -1,4 +1,4 @@
-<td style="text-align: center;">
+<div class="center">
     <h1>Регистрация прошла успешно!</h1>
     <p>Ссылка для активации учетной записи <?= $resended ?? '' ?> отправлена вам на email.</p>
-</td>
+</div>
