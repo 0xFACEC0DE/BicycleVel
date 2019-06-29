@@ -4,4 +4,4 @@
         <p><?= $article->text ?></p>
         <hr>
     <?php endforeach; ?>
-</div>>
+</div>

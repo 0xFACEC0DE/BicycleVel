@@ -2,6 +2,7 @@
 
 namespace Bicycle\Controllers;
 
+use Bicycle\Lib\App;
 use Bicycle\Models\User;
 
 abstract class Controller

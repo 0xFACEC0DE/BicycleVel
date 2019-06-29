@@ -38,7 +38,7 @@ class UserActivationService
 
     private static function createActivationLink($userId, $code)
     {
-        $url = $_SERVER['HTTPS'] ? 'https://' : 'http://';
+        $url = isset($_SERVER['HTTPS']) ? 'https://' : 'http://';
         $url .= $_SERVER['SERVER_NAME'];
         return "$url/user/$userId/activate/$code";
     }
@@ -56,11 +56,8 @@ class UserActivationService
     {
         $code = self::createActivationCode($receiver);
         $link = self::createActivationLink($receiver->id, $code);
-
         $body = App::view()->html($templateName, compact('link'));
-
         $config = App::config()['mailing'];
-
         $mailer = self::getMailer($config);
 
         $message = (new Swift_Message($subject))

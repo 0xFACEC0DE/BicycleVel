@@ -52,8 +52,8 @@ abstract class ActiveRecordEntity
     {
         $reflector = new \ReflectionObject($this);
         foreach ($reflector->getProperties() as $property) {
-            if (!$property->isStatic()) {
-                $properties[$property->getName()] = $property->getValue($this);
+            if (!$property->isStatic() && ($value = $property->getValue($this))) {
+                $properties[$property->getName()] = $value;
             }
         }
         return $properties;
@@ -62,7 +62,7 @@ abstract class ActiveRecordEntity
     public function save()
     {
         $properties = $this->getProperties();
-        return isset($properties['id']) ? $this->update($properties) : $this->insert($properties);
+        return empty($properties['id']) ? $this->insert($properties) : $this->update($properties);
     }
 
     private function insert($properties)

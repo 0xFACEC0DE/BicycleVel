@@ -18,14 +18,17 @@ class AuthController extends Controller
             App::response()->redirect('/user/signup');
         };
 
-        if ($user = User::create($_POST)) {
-            UserActivationService::sendActivationMail($user, 'Активация', 'mail/userActivation');
-            App::response()->redirect('/user/signup/success');
-
-        } else {
+        if (!$user = User::create($_POST)) {
             App::session()->set('previous', $_POST);
             App::session()->set('errors', ['server error, user not registered']);
             App::response()->redirect('/user/signup');
+        }
+
+        if (UserActivationService::sendActivationMail($user, 'Активация', 'mail/userActivation')) {
+            App::response()->redirect('/user/signup/success');
+        } else {
+            App::session()->set('id', $user->id);
+            return App::view()->layoutHtml('users/activateFail');
         }
     }
 

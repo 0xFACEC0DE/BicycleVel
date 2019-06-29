@@ -51,8 +51,12 @@ class UserController extends Controller
     public function resend()
     {
         $user = User::findOrDie(App::session()->get('id'));
-        UserActivationService::sendActivationMail($user, 'Активация', 'mail/userActivation');
 
-        return App::view()->layoutHtml('users/signUpSuccess', ['resended' => 'повторно']);
+        if (UserActivationService::sendActivationMail($user, 'Активация', 'mail/userActivation')) {
+            return App::view()->layoutHtml('users/signUpSuccess', ['resended' => 'повторно']);
+        } else {
+            App::session()->set('id', $user->id);
+            return App::view()->layoutHtml('users/activateFail');
+        }
     }
 }

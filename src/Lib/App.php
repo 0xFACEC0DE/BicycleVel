@@ -11,30 +11,31 @@ class App
 
     private static $config;
 
+    private static function init()
+    {
+        self::$config = require(__DIR__ . '/../../config.php');
+        self::$container['session'] = new Session();
+        self::$container['view'] = new View();
+        self::$container['router'] = new Router(self::$config['routes']);
+        self::$container['response'] = new Response();
+        self::$container['db'] = new Db(self::$config['db']);
+    }
+
     /**
      * Application execution core
      * @param $config
      */
     public static function run()
     {
-        self::$config = require(__DIR__ . '/../../config.php');
-        //set storage bindings
-        self::$container['session'] = new Session();
-        self::$container['view'] = new View();
-        self::$container['router'] = new Router(self::$config['routes']);
-        self::$container['response'] = new Response();
-        self::$container['db'] = new Db(self::$config['db']);
+        self::init();
 
-        // getting action info from routes compared with current path
         if (!$data = self::router()->getAction()) {
             self::abortWithErrorPage();
         }
-
         $controller = new $data['controller'];
         $action = $data['action'];
-        $controllerOutput = $controller->$action();
 
-        self::response()->setOutput($controllerOutput)->sendHeaders()->output();
+        self::response()->setOutput($controller->$action(...$data['params']))->sendHeaders()->output();
     }
 
     /**

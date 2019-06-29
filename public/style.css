@@ -48,3 +48,13 @@ body {
     color: mintcream;
     font-size: 18px;
 }
+
+nav li {
+    list-style: none;
+    display: inline;
+    padding-right: 25px;
+}
+
+nav a {
+    text-decoration: none;
+}

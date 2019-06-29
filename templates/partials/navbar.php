@@ -1,6 +1,6 @@
 <nav>
     <ul>
-        <li><a href="/">Главная страница</a></li>
+        <li><a href="/">Главная</a></li>
         <?php if ($user): ?>
             <li>Привет, <?= $user->name ?></li>
             <li><a href="/user/logout">Выйти</a></li>

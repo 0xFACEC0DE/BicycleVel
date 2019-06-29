@@ -30,11 +30,8 @@ class Router
      */
     public function __construct($routes)
     {
-        //route path
         $this->route = parse_url($_SERVER['REQUEST_URI'])['path'];
-        //request http method
         $this->requestMethod = strtoupper($_SERVER['REQUEST_METHOD']);
-        //app routes list matching the request http method
         $this->routes = isset($routes[$this->requestMethod]) ? $routes[$this->requestMethod] : [];
     }
 
@@ -64,12 +61,13 @@ class Router
 
         foreach ($routes as $pattern => $controllerAndAction) {
             preg_match($pattern, $this->route, $matches);
+
             if (!empty($matches)) {
-                //route matched path
-                //$controllerAndAction contains array with appropriate action data at this iteration
+                array_shift($matches);
+                $controllerAndAction['params'] = $matches;
                 return $controllerAndAction;
             }
         }
-        return null; //no route found for current path
+        return null;
     }
 }

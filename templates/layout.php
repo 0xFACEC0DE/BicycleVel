@@ -5,7 +5,6 @@
 <?php include __DIR__ . '/partials/navbar.php'; ?>
     <div class="container">
         <?php echo $content ?? ''; ?>
-
         <?php if (!empty($errors)): ?>
             <div class="error center">
                 <?php foreach ($errors as $message): ?>
