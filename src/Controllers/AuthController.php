@@ -24,12 +24,11 @@ class AuthController extends Controller
             App::response()->redirect('/user/signup');
         }
 
-        if (UserActivationService::sendActivationMail($user, 'Активация', 'mail/userActivation')) {
-            App::response()->redirect('/user/signup/success');
-        } else {
-            App::session()->set('id', $user->id);
-            return App::view()->layoutHtml('users/activateFail');
-        }
+        App::addPostAction(function () use ($user) {
+            UserActivationService::sendActivationMail($user, 'Активация', 'mail/userActivation');
+        });
+        App::session()->set('id', $user->id);
+        return App::view()->layoutHtml('users/signUpSuccess');
     }
 
     public function login()

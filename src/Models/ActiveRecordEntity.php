@@ -20,14 +20,14 @@ abstract class ActiveRecordEntity
 
     public static function findAll(): array
     {
-        return App::db()->query('SELECT * FROM `' . static::$table . '`;', [], static::class);
+        return App::db()->query('SELECT * FROM `' . static::$table . '`', [], static::class);
     }
 
     public static function find($value, string $property = 'id')
     {
         $property = '`'. $property .'`';
         $entities = App::db()->query(
-            "SELECT * FROM `" . static::$table . "` WHERE $property = :val;",
+            "SELECT * FROM `" . static::$table . "` WHERE $property = :val",
             [ ':val' => $value],
             static::class
         );
@@ -80,7 +80,7 @@ abstract class ActiveRecordEntity
         $paramsString = implode(', ', $paramNames);
         $tableName = static::$table;
 
-        $sql = "INSERT INTO `$tableName` ( $columnsString ) VALUES ( $paramsString );";
+        $sql = "INSERT INTO `$tableName` ( $columnsString ) VALUES ( $paramsString )";
 
         if ($result = App::db()->exec($sql, $paramBindings)) {
             $this->id = App::db()->getLastInsertId();
@@ -103,7 +103,7 @@ abstract class ActiveRecordEntity
         }
 
         $colAndParamString = implode(', ', $columnsAndParams);
-        $sql = "UPDATE `$tableName` SET $colAndParamString WHERE `id` = $id ;";
+        $sql = "UPDATE `$tableName` SET $colAndParamString WHERE `id` = $id";
 
         return App::db()->exec($sql, $paramBindings);
     }

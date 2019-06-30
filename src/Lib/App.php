@@ -11,6 +11,8 @@ class App
 
     private static $config;
 
+    private static $postActions = [];
+
     private static function init()
     {
         self::$config = require(__DIR__ . '/../../config.php');
@@ -34,8 +36,10 @@ class App
         }
         $controller = new $data['controller'];
         $action = $data['action'];
+        $result = $controller->$action(...$data['params']);
 
-        self::response()->setOutput($controller->$action(...$data['params']))->sendHeaders()->output();
+        self::response()->setOutput($result)->finishOutput();
+        self::runPostActions();
     }
 
     /**
@@ -45,8 +49,22 @@ class App
     public static function abortWithErrorPage($message = '', $code = 404)
     {
         $out = self::view()->layoutHtml('errors/' . $code, compact('message'));
-        self::response()->setResponseCode($code)->setOutput($out)->output();
+        self::response()->setResponseCode($code)->setOutput($out)->finishOutput();
         exit;
+    }
+
+    public static function addPostAction(callable $callback)
+    {
+        self::$postActions[] = $callback;
+    }
+
+    private static function runPostActions()
+    {
+        if (!empty(self::$postActions)) {
+            foreach (self::$postActions as $postAction) {
+                $postAction();
+            }
+        }
     }
 
     /**

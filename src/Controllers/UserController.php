@@ -41,6 +41,7 @@ class UserController extends Controller
         $user = User::findOrDie($userId);
 
         if (UserActivationService::checkActivationCode($user, $activationCode) && $user->activate()) {
+            UserActivationService::clearActivationCode($activationCode);
             return App::view()->layoutHtml('users/activateSuccess');
         } else {
             App::session()->set('id', $user->id);
@@ -55,8 +56,7 @@ class UserController extends Controller
         if (UserActivationService::sendActivationMail($user, 'Активация', 'mail/userActivation')) {
             return App::view()->layoutHtml('users/signUpSuccess', ['resended' => 'повторно']);
         } else {
-            App::session()->set('id', $user->id);
-            return App::view()->layoutHtml('users/activateFail');
+            return App::view()->layoutHtml('users/resendFail');
         }
     }
 }

@@ -31,7 +31,6 @@ class Response
                 header($header);
             }
         }
-        return $this;
     }
 
     public function setResponseCode(int $code = 200)
@@ -40,9 +39,15 @@ class Response
         return $this;
     }
 
-    public function output()
+    public function finishOutput()
     {
+        $this->sendHeaders();
+        App::session()->commit();
         echo $this->outputString;
+
+        if (function_exists('fastcgi_finish_request')) {
+            fastcgi_finish_request();
+        }
     }
 
     public function redirect(string $url = '/')
