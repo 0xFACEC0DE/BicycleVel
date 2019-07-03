@@ -42,7 +42,7 @@ class Response
     public function finishOutput()
     {
         $this->sendHeaders();
-        App::session()->commit();
+        session()->commit();
         echo $this->outputString;
 
         if (function_exists('fastcgi_finish_request')) {

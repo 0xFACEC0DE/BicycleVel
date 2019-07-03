@@ -20,13 +20,13 @@ abstract class ActiveRecordEntity
 
     public static function findAll(): array
     {
-        return App::db()->query('SELECT * FROM `' . static::$table . '`', [], static::class);
+        return db()->query('SELECT * FROM `' . static::$table . '`', [], static::class);
     }
 
     public static function find($value, string $property = 'id')
     {
         $property = '`'. $property .'`';
-        $entities = App::db()->query(
+        $entities = db()->query(
             "SELECT * FROM `" . static::$table . "` WHERE $property = :val",
             [ ':val' => $value],
             static::class
@@ -82,8 +82,8 @@ abstract class ActiveRecordEntity
 
         $sql = "INSERT INTO `$tableName` ( $columnsString ) VALUES ( $paramsString )";
 
-        if ($result = App::db()->exec($sql, $paramBindings)) {
-            $this->id = App::db()->getLastInsertId();
+        if ($result = db()->exec($sql, $paramBindings)) {
+            $this->id = db()->getLastInsertId();
         }
 
         return $result;
@@ -105,14 +105,14 @@ abstract class ActiveRecordEntity
         $colAndParamString = implode(', ', $columnsAndParams);
         $sql = "UPDATE `$tableName` SET $colAndParamString WHERE `id` = $id";
 
-        return App::db()->exec($sql, $paramBindings);
+        return db()->exec($sql, $paramBindings);
     }
 
     public function delete()
     {
         $table = static::$table;
         $sql = "DELETE FROM `$table` WHERE id = :id";
-        $result = App::db()->exec($sql, [':id' => $this->id]);
+        $result = db()->exec($sql, [':id' => $this->id]);
 
         $this->id = null;
         return $result;

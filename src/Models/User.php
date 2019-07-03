@@ -2,8 +2,6 @@
 
 namespace Bicycle\Models;
 
-use Bicycle\Lib\App;
-
 class User extends ActiveRecordEntity
 {
     /** @var string */
@@ -47,7 +45,7 @@ class User extends ActiveRecordEntity
 
     public static function authorized()
     {
-        if ( !($identity = App::session()->get('identity')) || !($user = self::findOne($identity['id'])) ) {
+        if ( !($identity = session()->get('identity')) || !($user = self::findOne($identity['id'])) ) {
             return false;
         };
 
@@ -58,7 +56,7 @@ class User extends ActiveRecordEntity
     {
         $identity['auth_token'] = $this->auth_token;
         $identity['id'] = $this->id;
-        App::session()->set('identity', $identity);
+        session()->set('identity', $identity);
     }
 
     public static function loginBy(array $data, string $property)

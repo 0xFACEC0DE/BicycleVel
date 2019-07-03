@@ -10,6 +10,7 @@
     },
     "autoload": {
         "files": [
+            "src/Lib/Helpers.php"
         ],
         "psr-4": {
             "Bicycle\\": "src/"

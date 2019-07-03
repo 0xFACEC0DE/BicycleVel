@@ -8,9 +8,9 @@ class View
 
     private $extraVars;
 
-    public function __construct()
+    public function __construct(string $templatePath)
     {
-        $this->templatePath =  __DIR__ . '/../../templates/';
+        $this->templatePath =  $templatePath;
         $this->extraVars = [];
     }
 

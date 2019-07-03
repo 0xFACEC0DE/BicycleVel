@@ -13,45 +13,45 @@ class AuthController extends Controller
     public function register()
     {
         if (!empty($errorMessages = RegisterValidator::validate($_POST))) {
-            App::session()->set('previous', $_POST);
-            App::session()->set('errors', $errorMessages);
-            App::response()->redirect('/user/signup');
+            session()->set('previous', $_POST);
+            session()->set('errors', $errorMessages);
+            response()->redirect('/user/signup');
         };
 
         if (!$user = User::create($_POST)) {
-            App::session()->set('previous', $_POST);
-            App::session()->set('errors', ['server error, user not registered']);
-            App::response()->redirect('/user/signup');
+            session()->set('previous', $_POST);
+            session()->set('errors', ['server error, user not registered']);
+            response()->redirect('/user/signup');
         }
 
         App::addPostAction(function () use ($user) {
             UserActivationService::sendActivationMail($user, 'Активация', 'mail/userActivation');
         });
-        App::session()->set('id', $user->id);
-        return App::view()->layoutHtml('users/signUpSuccess');
+        session()->set('id', $user->id);
+        return view()->layoutHtml('users/signUpSuccess');
     }
 
     public function login()
     {
         if ($errorMessages = LoginValidator::validate($_POST)) {
-            App::session()->set('previous', $_POST);
-            App::session()->set('errors', $errorMessages);
-            App::response()->redirect('/user/signin');
+            session()->set('previous', $_POST);
+            session()->set('errors', $errorMessages);
+            response()->redirect('/user/signin');
         }
 
         if (!$user = User::loginBy($_POST, 'email')) {
-            App::session()->set('previous', $_POST);
-            App::session()->set('errors', ['User with such credentials not found']);
-            App::response()->redirect('/user/signin');
+            session()->set('previous', $_POST);
+            session()->set('errors', ['User with such credentials not found']);
+            response()->redirect('/user/signin');
         }
 
         $user->saveAuthorization();
-        App::response()->redirect('/');
+        response()->redirect('/');
     }
 
     public function logout()
     {
-        App::session()->clean();
-        App::response()->redirect('/');
+        session()->clean();
+        response()->redirect('/');
     }
 }

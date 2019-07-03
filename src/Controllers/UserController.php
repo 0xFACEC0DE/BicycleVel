@@ -11,29 +11,29 @@ class UserController extends Controller
     public function profile()
     {
         if ($user = User::authorized()) {
-            return App::view()->layoutHtml('users/authorized', compact('user'));
+            return view()->layoutHtml('users/authorized', compact('user'));
         }
 
-        return App::view()->layoutHtml('users/notAuthorized');
+        return view()->layoutHtml('users/notAuthorized');
     }
 
     public function signUp()
     {
-        $errors = App::session()->get('errors');
-        $previous = App::session()->get('previous');
-        return App::view()->layoutHtml('users/signUp', compact(['errors', 'previous']));
+        $errors = session()->get('errors');
+        $previous = session()->get('previous');
+        return view()->layoutHtml('users/signUp', compact(['errors', 'previous']));
     }
 
     public function signUpSuccess()
     {
-        return App::view()->layoutHtml('users/signUpSuccess');
+        return view()->layoutHtml('users/signUpSuccess');
     }
 
     public function signIn()
     {
-        $previous = App::session()->get('previous');
-        $errors = App::session()->get('errors');
-        return App::view()->layoutHtml('users/signIn', compact(['errors', 'previous']));
+        $previous = session()->get('previous');
+        $errors = session()->get('errors');
+        return view()->layoutHtml('users/signIn', compact(['errors', 'previous']));
     }
 
     public function activate(int $userId, string $activationCode)
@@ -42,21 +42,21 @@ class UserController extends Controller
 
         if (UserActivationService::checkActivationCode($user, $activationCode) && $user->activate()) {
             UserActivationService::clearActivationCode($activationCode);
-            return App::view()->layoutHtml('users/activateSuccess');
+            return view()->layoutHtml('users/activateSuccess');
         } else {
-            App::session()->set('id', $user->id);
-            return App::view()->layoutHtml('users/activateFail');
+            session()->set('id', $user->id);
+            return view()->layoutHtml('users/activateFail');
         }
     }
 
     public function resend()
     {
-        $user = User::findOrDie(App::session()->get('id'));
+        $user = User::findOrDie(session()->get('id'));
 
         if (UserActivationService::sendActivationMail($user, 'Активация', 'mail/userActivation')) {
-            return App::view()->layoutHtml('users/signUpSuccess', ['resended' => 'повторно']);
+            return view()->layoutHtml('users/signUpSuccess', ['resended' => 'повторно']);
         } else {
-            return App::view()->layoutHtml('users/resendFail');
+            return view()->layoutHtml('users/resendFail');
         }
     }
 }

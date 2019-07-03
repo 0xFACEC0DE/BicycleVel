@@ -5,8 +5,10 @@ namespace Bicycle\Lib;
 class Session
 {
 
-    public function __construct()
+    public function __construct($lifetime)
     {
+        ini_set('session.gc_maxlifetime', $lifetime);
+        ini_set('session.cookie_lifetime', $lifetime);
         session_start();
     }
     

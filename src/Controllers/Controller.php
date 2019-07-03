@@ -2,7 +2,6 @@
 
 namespace Bicycle\Controllers;
 
-use Bicycle\Lib\App;
 use Bicycle\Models\User;
 
 abstract class Controller
@@ -13,6 +12,6 @@ abstract class Controller
     public function __construct()
     {
         $this->user = User::authorized();
-        App::view()->setVar('user', $this->user);
+        view()->setVar('user', $this->user);
     }
 }

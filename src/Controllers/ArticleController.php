@@ -2,7 +2,6 @@
 
 namespace Bicycle\Controllers;
 
-use Bicycle\Lib\App;
 use Bicycle\Models\Article;
 use Bicycle\Models\User;
 
@@ -11,13 +10,13 @@ class ArticleController extends Controller
     public function index()
     {
         $articles = Article::findAll();
-        return App::view()->layoutHtml('articles/main', compact('articles'));
+        return view()->layoutHtml('articles/main', compact('articles'));
     }
 
     public function view(int $articleId)
     {
         $article = Article::findOrDie($articleId);
-        return App::view()->layoutHtml('articles/single', compact('article'));
+        return view()->layoutHtml('articles/single', compact('article'));
     }
 
     public function update($articleId)
@@ -28,7 +27,7 @@ class ArticleController extends Controller
         $article->text = 'sdfjhojfoihs';
         $article->save();
 
-        return App::view()->layoutHtml('articles/single', compact('article'));
+        return view()->layoutHtml('articles/single', compact('article'));
     }
 
     public function create($name)
@@ -42,12 +41,12 @@ class ArticleController extends Controller
         $article->save();
 
         $article = Article::findOrDie($article->id);
-        return App::view()->layoutHtml('articles/single', compact('article'));
+        return view()->layoutHtml('articles/single', compact('article'));
     }
 
     public function delete($articleId)
     {
         $res = Article::findOrDie($articleId)->delete();
-        return App::view()->layoutHtml('articles/deleted', compact('res'));
+        return view()->layoutHtml('articles/deleted', compact('res'));
     }
 }
